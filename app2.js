@@ -39,16 +39,30 @@ function Plots(ID) {
         var layoutBar = {
             title: "Subject's Bellybutton Biodiversity",
             xaxis: {title: "Quantity"},
-            yaxis: {title: "Label"},
+            yaxis: {title: "Label"}
+        };
+        //Have to use the "not reversed data" for the Bubble chart. 
+        var traceBubble = {
+            x: filteredSample.otu_ids,
+            y: filteredSample.sample_values,
+            mode: "markers",
+            marker:{
+                size: filteredSample.sample_values,
+                color: filteredSample.otu_ids,
+            },
+            text: otu_labels
         };
 
-        var traceBubble = {
-            x:,
-            y:,
-            
+        var dataBubble = [traceBubble];
+
+        var layoutBubble = {
+            title: "Sample size of each OTU",
+            xaxis: {title: "OTU ID"},
+            yaxis: {title: "Sample Size"}
         }
 
         Plotly.newPlot("bar", dataBar, layoutBar);
+        Plotly.newPlot("bubble", dataBubble, layoutBubble);
     });
 };
 
