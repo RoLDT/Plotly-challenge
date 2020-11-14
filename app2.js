@@ -1,15 +1,21 @@
 // Read Json using d3
-d3.json("samples.json").then(function(data){
-    console.log(data)
-    // Add "names" into the dropdown menu
-    var names = data.names;
-    var opt = d3.selectAll("#selDataset");
-    Object.entries(names).forEach(([index,value]) => {
-        opt.append("option").text(value);
-    });
-});
+function init() {
+    d3.json("samples.json").then(function(data){
+        console.log(data)
+        // Add "names" into the dropdown menu
+        var names = data.names;
+        var opt = d3.selectAll("#selDataset");
+        Object.entries(names).forEach(([index,value]) => {
+            opt.append("option").text(value);
+        });
+        const first = names[0];
 
-function Plots(ID) {
+        Populate(first);
+    });
+};
+
+
+function Populate(ID) {
     d3.json("samples.json").then((data) => {
 
         var samples = data.samples;
@@ -26,6 +32,7 @@ function Plots(ID) {
         //console.log(otu_ids);
         //console.log(otu_labels);
 
+        //Bar chart
         var traceBar = {
             x: sample_values,
             y: otu_ids,
@@ -41,6 +48,7 @@ function Plots(ID) {
             xaxis: {title: "Quantity"},
             yaxis: {title: "Label"}
         };
+        //Bubble Chart
         //Have to use the "not reversed data" for the Bubble chart. 
         var traceBubble = {
             x: filteredSample.otu_ids,
@@ -60,10 +68,27 @@ function Plots(ID) {
             xaxis: {title: "OTU ID"},
             yaxis: {title: "Sample Size"}
         }
-
+        //Plotting.
         Plotly.newPlot("bar", dataBar, layoutBar);
         Plotly.newPlot("bubble", dataBubble, layoutBubble);
+
+        //Demographic Table
+        var metadata = data.metadata;
+
+        var filteredMetadata = metadata.filter(data => data.id.toString() === ID)[0];
+        
+        var demographic = d3.select("#sample-metadata");
+        demographic.html("");
+        Object.entries(filteredMetadata).forEach((index, value) => {
+            demographic.append("h6").text(index, ": " + value + "\n")
+        });
+
+
     });
 };
 
-Plots("940");
+function optionChanged(newID) {
+    Populate(newID)
+};
+
+init();
